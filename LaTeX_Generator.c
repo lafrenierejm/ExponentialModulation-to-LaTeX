@@ -3,18 +3,17 @@
 
 main() {
 	/*	Function Prototypes	*/
-	int DecimalBitLength(int decimal);
-	void DecimalToBitstring(int decimal, int bitstring[], int numBits, FILE *outputFile);
-	int PerformModulation(int b, int bitstring[], int numElements, int modulus, FILE *outputFile);
+	short DecimalBitLength(unsigned decimal);
+	void DecimalToBitstring(unsigned decimal, short bitstring[], short numBits, FILE *outputFile);
+	unsigned PerformModulation(unsigned b, short bitstring[], short numElements, unsigned modulus, FILE *outputFile);
 	
 	/*	Variables	*/
-	int b = 7;	// b^n mod m
-	int n = 644;
-	int m = 645;
-	int numBits = DecimalBitLength(n);	// Holds length of bistring of b
-	printf("%d\n", numBits);	// Print the number of bits required to represent decimal b
-	int result;	// Final result of exponential modulation
-	int binary[numBits];	// Array of ints to hold binary representation
+	unsigned b, n, m;	// b^n mod m
+		printf("Enter b, n, and m: ");
+		scanf("%u %u %u", &b, &n, &m);
+	short numBits = DecimalBitLength(n);	// Holds length of bistring of b
+	unsigned result;	// Final result of exponential modulation
+	short binary[numBits];	// Array of ints to hold binary representation
 	// File	variables
 	char outputFilename[] = "Output.tex";
 	FILE *outputFile = fopen(outputFilename, "w");
@@ -34,8 +33,8 @@ main() {
 }
 
 /*	Calculate the number of bits requred to represent int decimal	*/
-int DecimalBitLength(int decimal) {
-	int numberPlaces = 0;
+short DecimalBitLength(unsigned decimal) {
+	short numberPlaces = 0;
 	while(decimal > 0) {
 		numberPlaces++;
 		decimal /= 2;
@@ -45,8 +44,8 @@ int DecimalBitLength(int decimal) {
 }
 
 /*	Fill bitstring array of length numBits with the binary representaition of decimal	*/
-void DecimalToBitstring(int decimal, int bitstring[], const int numBits, FILE *outputFile) {		
-	int tmpNumBits = numBits;
+void DecimalToBitstring(unsigned decimal, short bitstring[], const short numBits, FILE *outputFile) {		
+	short tmpNumBits = numBits;
 	fprintf(outputFile, "\\begin{align*}\n");
 	
 	while(tmpNumBits > 0) {	
@@ -76,10 +75,10 @@ void DecimalToBitstring(int decimal, int bitstring[], const int numBits, FILE *o
 	return;	// Exit returning void
 }
 
-int PerformModulation(int b, int a[], int numElements, int m, FILE *outputFile) {
-	int x = 1;
-	int power = b % m;
-	int tmp = numElements;
+unsigned PerformModulation(unsigned b, short a[], short numElements, unsigned m, FILE *outputFile) {
+	short x = 1;
+	unsigned power = b % m;
+	short tmpNumElements = numElements;
 	
 	fprintf(outputFile, "$x = %d$\t\\\\\n$\\text{power} = %d$",
 		x, power);
@@ -87,7 +86,7 @@ int PerformModulation(int b, int a[], int numElements, int m, FILE *outputFile) 
 		
 	while(numElements > 0) {
 		fprintf(outputFile, "$a_{%d} = %d$, ",
-			tmp - numElements, a[numElements]);
+			tmpNumElements - numElements, a[numElements]);
 		
 		// calculate x
 		if(a[numElements] == 1) {
