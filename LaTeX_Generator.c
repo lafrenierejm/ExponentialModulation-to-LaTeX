@@ -18,7 +18,7 @@ struct node {
 // Function prototypes
 struct node* MakeNode(char value, struct node *before);	// Create new node
 void DeleteList(struct node *head);	// Delete linked list
-struct node* DecimalToBitstring(unsigned decimal, struct node *head, FILE *outputFile);	// Convert 'decimal' to bitstring
+void DecimalToBitstring(unsigned decimal, struct node *head, FILE *outputFile);	// Convert 'decimal' to bitstring
 short PerformModulation(unsigned b, struct node *tail, unsigned m, FILE *outputFile);	// Ouput exponential modulation
 
 // Main method
@@ -26,7 +26,6 @@ main() {
 	unsigned b, n, m;	// b^n mod m
 	short result;	// Final result of exponential modulation
 	struct node *head;	// Pointer directed at first node in list
-	struct node *tail;	// Pointer directed at last node in list
 	char outputFilename[] = "Output.tex";
 	FILE *outputFile = fopen(outputFilename, "w");
 	
@@ -40,12 +39,12 @@ main() {
 	fprintf(outputFile, "\\(b\\) = %d, \\(n\\) = %d, \\(m\\) = %d\n", b, n, m);
 
 	// Store n's binary representation in list
-	tail = DecimalToBitstring(n, head, outputFile);
+	DecimalToBitstring(n, head, outputFile);
 
 	// outputFile now contains steps of binary conversion
 	fprintf(outputFile, "\\\\\n\n");
 
-	result = PerformModulation(b, tail, m, outputFile);
+	result = PerformModulation(b, head, m, outputFile);
 	fprintf(outputFile, "\n\\(%d^{%d} \\bmod %d = \\ans{%d}", // Write final result
 		b, n, m, result);
 	
@@ -91,10 +90,8 @@ void DeleteList(struct node *head) {
 
 // Storebitstring representation of decimal in linked list
 // Returns length of that binary representation
-struct node* DecimalToBitstring(unsigned decimal, struct node *head, FILE *outputFile) {		
-	struct node *ptr = head;// Point new pointer at head
-	struct node *msb;	// Pointer for most significant bit
-	ptr = head;		// Point ptr at head of list
+void DecimalToBitstring(unsigned decimal, struct node *head, FILE *outputFile) {		
+	struct node *ptr = head;	// Point new pointer at head
 
 	fprintf(outputFile, "\\begin{align*}\n");	// Begin TeX align environment
 	
@@ -109,32 +106,30 @@ struct node* DecimalToBitstring(unsigned decimal, struct node *head, FILE *outpu
 		if(decimal >= 1)	// More than one iteration left
 			fprintf(outputFile, "\\\\");
 		fprintf(outputFile, "\n");
-		
-//		printf("%c\n", ptr->bit);	// Display bit
+
 		ptr->next = MakeNode('z', ptr);	// Create new end of list
 		ptr = ptr->next;		// Point to end of list
 	}
 
-	// Go back one step from end of list, returning to MSB
+	// Go to most significant bit
 	ptr = ptr->prev;
-	msb = ptr;	// Assign msb pointer
 
 	// Output complete bitstring
 	fprintf(outputFile, "\\end{align*}\n");
 	fprintf(outputFile, "So binary representation of \\(n\\) is \\(");
 
-	while(ptr->prev) {		// Loop backwards until beginning of list
+	while(ptr) {		// Loop backwards until beginning of list
 		fprintf(outputFile, "%c", ptr->bit);	// Print out bit
 		ptr = ptr->prev;			// Go to next node
 	}
 	fprintf(outputFile, "_2\\)");
 	
-	return msb;	// Exit returning pointer to MSB
+	return;	// Exit returning void
 }
 
 // Write process of calculating x and power to output file
 // Return final remainder
-short PerformModulation(unsigned b, struct node *tail, unsigned m, FILE *outputFile) {
+short PerformModulation(unsigned b, struct node *head, unsigned m, FILE *outputFile) {
 	struct node *ptr;	// Create new pointer, point at start of list
 	short x = 1;		// Instantiate x with value 1
 	unsigned power = b % m;	// Power = b mod m
@@ -142,18 +137,15 @@ short PerformModulation(unsigned b, struct node *tail, unsigned m, FILE *outputF
 
 
 	// Write initial values of x, power
-	fprintf(outputFile, "\\(x = %d\\(\t\\\\\n\\)\\text{power} = %d\\)",
+	fprintf(outputFile, "\\(x = %d\\)\t\\\\\n\\(\\text{power} = %d\\)",
 		x, power);
 	fprintf(outputFile, "\n\n");
 
 	// Loop through list backwards
-	ptr = tail;		// Now pointing at MSB
+	ptr = head;		// Now pointing at LSB
 	currentPosition = 0;	// Begin at a_0
 
-	while(ptr != NULL) {
-
-		// Debug
-		printf("%c\n", ptr->bit);
+	while(ptr) {
 
 		// Output value of a_currentPosition
 		fprintf(outputFile, "\\(a_{%d} = %c\\), ",
@@ -170,7 +162,7 @@ short PerformModulation(unsigned b, struct node *tail, unsigned m, FILE *outputF
 			fprintf(outputFile, "\\(x = %d\\); ", x);
 
 		// Calculate power
-		if(ptr->prev != NULL) {
+		if(ptr->next) {
 			fprintf(outputFile, "power = \\(%d^2 \\bmod %d = ", power, m);
 			power = (power * power) % m;
 			fprintf(outputFile, "%d\\)\\\\\n", power);
@@ -179,9 +171,8 @@ short PerformModulation(unsigned b, struct node *tail, unsigned m, FILE *outputF
 			fprintf(outputFile, "\\\\\n");
 		
 		currentPosition++;	// Increment currentPosition
-		ptr = ptr->prev;	// Advance to prev node
+		ptr = ptr->next;	// Advance to next node
 	}
 
-	x = 1;
 	return x;	// Return final remainder 
 }
