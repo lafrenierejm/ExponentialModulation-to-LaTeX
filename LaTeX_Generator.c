@@ -19,12 +19,12 @@ struct node {
 struct node* MakeNode(char value, struct node *before);	// Create new node
 void DeleteList(struct node *head);	// Delete linked list
 void DecimalToBitstring(unsigned decimal, struct node *head, FILE *outputFile);	// Convert 'decimal' to bitstring
-short PerformModulation(unsigned b, struct node *tail, unsigned m, FILE *outputFile);	// Ouput exponential modulation
+unsigned PerformModulation(unsigned b, struct node *tail, unsigned m, FILE *outputFile);	// Ouput exponential modulation
 
 // Main method
 main() {		
 	unsigned b, n, m;	// b^n mod m
-	short result;	// Final result of exponential modulation
+	unsigned result;	// Final result of exponential modulation
 	struct node *head;	// Pointer directed at first node in list
 	char outputFilename[] = "Output.tex";
 	FILE *outputFile = fopen(outputFilename, "w");
@@ -129,9 +129,9 @@ void DecimalToBitstring(unsigned decimal, struct node *head, FILE *outputFile) {
 
 // Write process of calculating x and power to output file
 // Return final remainder
-short PerformModulation(unsigned b, struct node *head, unsigned m, FILE *outputFile) {
+unsigned PerformModulation(unsigned b, struct node *head, unsigned m, FILE *outputFile) {
 	struct node *ptr;	// Create new pointer, point at start of list
-	short x = 1;		// Instantiate x with value 1
+	unsigned x = 1;		// Instantiate x with value 1
 	unsigned power = b % m;	// Power = b mod m
 	int currentPosition;	// Used for subscript of a in TeX output
 
