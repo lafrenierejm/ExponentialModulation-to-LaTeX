@@ -148,7 +148,7 @@ unsigned PerformModulation(unsigned b, struct node *head, unsigned m, FILE *outp
 	while(ptr) {
 
 		// Output value of a_currentPosition
-		fprintf(outputFile, "\\(a_{%d} = %c\\), ",
+		fprintf(outputFile, "\\(a_{%d} = %c\\); ",
 			currentPosition, ptr->bit);
 		
 		// Calculate x
@@ -159,11 +159,11 @@ unsigned PerformModulation(unsigned b, struct node *head, unsigned m, FILE *outp
 			fprintf(outputFile, "%d\\); ", x);
 		}
 		else
-			fprintf(outputFile, "\\(x = %d\\); ", x);
+			fprintf(outputFile, "\\(x = %d\\)", x);
 
 		// Calculate power
 		if(ptr->next) {
-			fprintf(outputFile, "power = \\(%d^2 \\bmod %d = ", power, m);
+			fprintf(outputFile, "; power = \\(%d^2 \\bmod %d = ", power, m);
 			power = (power * power) % m;
 			fprintf(outputFile, "%d\\)\\\\\n", power);
 		}
