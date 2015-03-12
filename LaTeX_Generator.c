@@ -137,9 +137,10 @@ unsigned PerformModulation(unsigned b, struct node *head, unsigned m, FILE *outp
 
 
 	// Write initial values of x, power
-	fprintf(outputFile, "\\(x = %d\\)\t\\\\\n\\(\\text{power} = %d\\)",
+	fprintf(outputFile, "\\(x = %d\\)\t\\\\\n\\(\\text{power} = %d\\)\n",
 		x, power);
-	fprintf(outputFile, "\n\n");
+	// Begin center and tabular environments
+	fprintf(outputFile, "\\begin{center}\n\\begin{tabular}{l r|l r|l r}\n");
 
 	// Loop through list backwards
 	ptr = head;		// Now pointing at LSB
@@ -148,24 +149,24 @@ unsigned PerformModulation(unsigned b, struct node *head, unsigned m, FILE *outp
 	while(ptr->next) {
 
 		// Output value of a_currentPosition
-		fprintf(outputFile, "\\(a_{%d} = %c\\); ",
+		fprintf(outputFile, "\t\\(a_{%d} =\\)&\t\\(%c\\)&\t",
 			currentPosition, ptr->bit);
 		
 		// Calculate x
 		if(ptr->bit == '1') {	
-			fprintf(outputFile, "\\(x = (%d * %d) \\bmod %d = ",
+			fprintf(outputFile, "\\(x = (%d * %d) \\bmod %d =\\)&\t",
 				x, power, m);
 			x = (x * power) % m;
-			fprintf(outputFile, "%d\\)", x);
+			fprintf(outputFile, "\\(%d\\)&\t", x);
 		}
 		else
-			fprintf(outputFile, "\\(x = %d\\)", x);
+			fprintf(outputFile, "\\(x =\\)&\t \\(%d\\)&\t", x);
 
 		// Calculate power
 		if(ptr->next->next) {
-			fprintf(outputFile, "; power = \\(%d^2 \\bmod %d = ", power, m);
+			fprintf(outputFile, "power = \\(%d^2 \\bmod %d =\\)&\t", power, m);
 			power = (power * power) % m;
-			fprintf(outputFile, "%d\\)\\\\\n", power);
+			fprintf(outputFile, "\\(%d\\)\\\\\n", power);
 		}
 		else
 			fprintf(outputFile, "\\\\\n");
@@ -173,6 +174,7 @@ unsigned PerformModulation(unsigned b, struct node *head, unsigned m, FILE *outp
 		currentPosition++;	// Increment currentPosition
 		ptr = ptr->next;	// Advance to next node
 	}
+	fprintf(outputFile, "\\end{tabular}\n\\end{center}");	// End center environment
 
 	return x;	// Return final remainder 
 }
