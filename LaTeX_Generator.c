@@ -45,7 +45,7 @@ main() {
 	fprintf(outputFile, "\\\\\n\n");
 
 	result = PerformModulation(b, head, m, outputFile);
-	fprintf(outputFile, "\n\\(%d^{%d} \\bmod %d = \\ans{%d}", // Write final result
+	fprintf(outputFile, "\nSo \\(%d^{%d} \\bmod %d = \\ans{%d}\\)", // Write final result
 		b, n, m, result);
 	
 	// Free memory used by list
@@ -145,7 +145,7 @@ unsigned PerformModulation(unsigned b, struct node *head, unsigned m, FILE *outp
 	ptr = head;		// Now pointing at LSB
 	currentPosition = 0;	// Begin at a_0
 
-	while(ptr) {
+	while(ptr->next) {
 
 		// Output value of a_currentPosition
 		fprintf(outputFile, "\\(a_{%d} = %c\\); ",
@@ -156,13 +156,13 @@ unsigned PerformModulation(unsigned b, struct node *head, unsigned m, FILE *outp
 			fprintf(outputFile, "\\(x = (%d * %d) \\bmod %d = ",
 				x, power, m);
 			x = (x * power) % m;
-			fprintf(outputFile, "%d\\); ", x);
+			fprintf(outputFile, "%d\\)", x);
 		}
 		else
 			fprintf(outputFile, "\\(x = %d\\)", x);
 
 		// Calculate power
-		if(ptr->next) {
+		if(ptr->next->next) {
 			fprintf(outputFile, "; power = \\(%d^2 \\bmod %d = ", power, m);
 			power = (power * power) % m;
 			fprintf(outputFile, "%d\\)\\\\\n", power);
