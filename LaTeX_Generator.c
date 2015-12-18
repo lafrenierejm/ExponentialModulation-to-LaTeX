@@ -22,7 +22,7 @@ void DecimalToBitstring(unsigned decimal, struct node *head, FILE *outputFile);	
 unsigned PerformModulation(unsigned b, struct node *tail, unsigned m, FILE *outputFile);	// Ouput exponential modulation
 
 // Main method
-main()
+int main()
 {
 	unsigned b, n, m;	// b^n mod m
 	unsigned result;	// Final result of exponential modulation
@@ -99,32 +99,40 @@ void DecimalToBitstring(unsigned decimal, struct node *head, FILE *outputFile)
 {
 	struct node *ptr = head;	// Point new pointer at head
 
-	fprintf(outputFile, "\\begin{align*}\n");	// Begin TeX align environment
+	// Begin align* environment in output
+	fprintf(outputFile, "\\begin{align*}\n");
 
 	// Loop while decimal is greater than 0
 	while(decimal != 0)
 	{
+		// Write beginning of operation
+		fprintf(outputFile, "%u / 2 &= ",
+				decimal);
+		// Perform operation
 		ptr->bit = '0' + (decimal % 2);	// Store remainder as char in list
 		decimal /= 2;			// Divide decimal
+		// Write results of operation
+		fprintf(outputFile, "%u &+ %c",
+				decimal, ptr->bit);
 
-		// Output tex markup
-		fprintf(outputFile, "\t%d / 2 &= %d\t&& %c",
-			decimal * 2, decimal, ptr->bit);
-		if(decimal >= 1)	// More than one iteration left
+		// If more than one iteration left
+		if(decimal >= 1)
 			fprintf(outputFile, "\\\\");
+
+		// Go to next line in output
 		fprintf(outputFile, "\n");
 
+		// Go to next node in list
 		ptr->next = MakeNode('z', ptr);	// Create new end of list
 		ptr = ptr->next;		// Point to end of list
 	}
+	// End align* environment in output
+	fprintf(outputFile, "\\end{align*}\n");
 
 	// Go to most significant bit
 	ptr = ptr->prev;
 
-	// Output complete bitstring
-	fprintf(outputFile, "\\end{align*}\n");
 	fprintf(outputFile, "So binary representation of \\(n\\) is \\(");
-
 	while(ptr)	// Loop backwards until beginning of list
 	{
 		fprintf(outputFile, "%c", ptr->bit);	// Print out bit
@@ -132,7 +140,8 @@ void DecimalToBitstring(unsigned decimal, struct node *head, FILE *outputFile)
 	}
 	fprintf(outputFile, "_2\\)");
 
-	return;	// Exit returning void
+	// Return void
+	return;
 }
 
 // Write process of calculating x and power to output file
@@ -188,5 +197,6 @@ unsigned PerformModulation(unsigned b, struct node *head, unsigned m, FILE *outp
 	}
 	fprintf(outputFile, "\\end{tabular}\n\\end{center}");	// End center environment
 
-	return x;	// Return final remainder
+	// Return final remainder
+	return x;
 }
