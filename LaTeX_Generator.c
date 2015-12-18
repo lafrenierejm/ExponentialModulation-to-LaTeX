@@ -18,17 +18,18 @@ struct node {
 // Function prototypes
 struct node* MakeNode(char value, struct node *before);	// Create new node
 void DeleteList(struct node *head);	// Delete linked list
-void DecimalToBitstring(unsigned decimal, struct node *head, FILE *outputFile);	// Convert 'decimal' to bitstring
+void DecimalToBitstring(unsigned decimal, struct node *head, FILE *outputFile);	// Convert [decimal] to bitstring
 unsigned PerformModulation(unsigned b, struct node *tail, unsigned m, FILE *outputFile);	// Ouput exponential modulation
 
 // Main method
-main() {		
+main()
+{
 	unsigned b, n, m;	// b^n mod m
 	unsigned result;	// Final result of exponential modulation
 	struct node *head;	// Pointer directed at first node in list
 	char outputFilename[] = "Output.tex";
 	FILE *outputFile = fopen(outputFilename, "w");
-	
+
 	head = MakeNode('z', NULL);	// Create first node with prev = NULL
 
 	// Get user input
@@ -47,7 +48,7 @@ main() {
 	result = PerformModulation(b, head, m, outputFile);
 	fprintf(outputFile, "\nSo \\(%d^{%d} \\bmod %d = \\ans{%d}\\)", // Write final result
 		b, n, m, result);
-	
+
 	// Free memory used by list
 	DeleteList(head);
 
@@ -56,11 +57,13 @@ main() {
 }
 
 // Method to create new node
-struct node* MakeNode(char value, struct node *before) {
+struct node* MakeNode(char value, struct node *before)
+{
 	struct node *newNode;	// Create new node pointer
 	newNode = (struct node*)malloc(sizeof(struct node));	// Allocate memory for new node
 
-	if(newNode == NULL) {	// Insufficient memory
+	if(newNode == NULL)
+	{	// Insufficient memory
 		printf("Node creation failed.\n");
 		return NULL;	// Return with NULL pointer
 	}
@@ -68,17 +71,19 @@ struct node* MakeNode(char value, struct node *before) {
 	newNode->bit = value;		// Store num as node's value
 	newNode->prev = before;		// Point back in list
 	newNode->next = NULL;		// Next element is NULL
-	
+
 	return newNode;
 }
 
 // Delete all nodes in list
-void DeleteList(struct node *head) {
+void DeleteList(struct node *head)
+{
 	struct node *ptr;	// New node pointer
 	ptr = head->next;	// Point to first node
-	
+
 	// Free memory up to last node
-	while(ptr->next) {
+	while(ptr->next)
+	{
 		free(head);	// Delete node
 		head = ptr;	// Advance head
 		ptr = ptr->next;// Advance ptr
@@ -90,13 +95,15 @@ void DeleteList(struct node *head) {
 
 // Storebitstring representation of decimal in linked list
 // Returns length of that binary representation
-void DecimalToBitstring(unsigned decimal, struct node *head, FILE *outputFile) {		
+void DecimalToBitstring(unsigned decimal, struct node *head, FILE *outputFile)
+{
 	struct node *ptr = head;	// Point new pointer at head
 
 	fprintf(outputFile, "\\begin{align*}\n");	// Begin TeX align environment
-	
+
 	// Loop while decimal is greater than 0
-	while(decimal != 0) {
+	while(decimal != 0)
+	{
 		ptr->bit = '0' + (decimal % 2);	// Store remainder as char in list
 		decimal /= 2;			// Divide decimal
 
@@ -118,18 +125,20 @@ void DecimalToBitstring(unsigned decimal, struct node *head, FILE *outputFile) {
 	fprintf(outputFile, "\\end{align*}\n");
 	fprintf(outputFile, "So binary representation of \\(n\\) is \\(");
 
-	while(ptr) {		// Loop backwards until beginning of list
+	while(ptr)	// Loop backwards until beginning of list
+	{
 		fprintf(outputFile, "%c", ptr->bit);	// Print out bit
 		ptr = ptr->prev;			// Go to next node
 	}
 	fprintf(outputFile, "_2\\)");
-	
+
 	return;	// Exit returning void
 }
 
 // Write process of calculating x and power to output file
 // Return final remainder
-unsigned PerformModulation(unsigned b, struct node *head, unsigned m, FILE *outputFile) {
+unsigned PerformModulation(unsigned b, struct node *head, unsigned m, FILE *outputFile)
+{
 	struct node *ptr;	// Create new pointer, point at start of list
 	unsigned x = 1;		// Instantiate x with value 1
 	unsigned power = b % m;	// Power = b mod m
@@ -146,14 +155,16 @@ unsigned PerformModulation(unsigned b, struct node *head, unsigned m, FILE *outp
 	ptr = head;		// Now pointing at LSB
 	currentPosition = 0;	// Begin at a_0
 
-	while(ptr->next) {
+	while(ptr->next)
+	{
 
 		// Output value of a_currentPosition
 		fprintf(outputFile, "\t\\(a_{%d} =\\)&\t\\(%c\\)&\t",
 			currentPosition, ptr->bit);
-		
+
 		// Calculate x
-		if(ptr->bit == '1') {	
+		if(ptr->bit == '1')
+		{
 			fprintf(outputFile, "\\(x = (%d * %d) \\bmod %d =\\)&\t",
 				x, power, m);
 			x = (x * power) % m;
@@ -163,18 +174,19 @@ unsigned PerformModulation(unsigned b, struct node *head, unsigned m, FILE *outp
 			fprintf(outputFile, "\\(x =\\)&\t \\(%d\\)&\t", x);
 
 		// Calculate power
-		if(ptr->next->next) {
+		if(ptr->next->next)
+		{
 			fprintf(outputFile, "power = \\(%d^2 \\bmod %d =\\)&\t", power, m);
 			power = (power * power) % m;
 			fprintf(outputFile, "\\(%d\\)\\\\\n", power);
 		}
 		else
 			fprintf(outputFile, "\\\\\n");
-		
+
 		currentPosition++;	// Increment currentPosition
 		ptr = ptr->next;	// Advance to next node
 	}
 	fprintf(outputFile, "\\end{tabular}\n\\end{center}");	// End center environment
 
-	return x;	// Return final remainder 
+	return x;	// Return final remainder
 }
